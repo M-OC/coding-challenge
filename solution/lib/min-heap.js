@@ -38,8 +38,6 @@ const swap = (nodes, indexA, indexB) => {
 
   nodes[indexA] = nodes[indexB];
   nodes[indexB] = temp;
-
-  return nodes;
 }
 
 const heapify = (nodes, rootIndex) => {
@@ -74,7 +72,7 @@ const insert = (heap, source) => {
     const parentNode = nodes[parentIndex] || null;
 
     if (parentNode && parentNode.value > targetNode.value) {
-      nodes = swap(nodes, targetIndex, parentIndex);
+      swap(nodes, targetIndex, parentIndex);
       return updateParents(nodes, parentIndex);
     }
 
@@ -87,16 +85,20 @@ const insert = (heap, source) => {
 };
 
 const removeRoot = (heap) => {
-  const lastLeafIndex = heap.length - 1;
-
-  if (lastLeafIndex < 2) {
-    return heap.shift();
+  if (heap.length === 0) {
+    return null;
   }
 
-  heap = swap(heap, 0, lastLeafIndex);
-  heap.pop();
+  if (heap.length <= 2) {
+    return heap.shift().source;
+  }
+
+  swap(heap, 0, heap.length - 1);
+  const root = heap.pop();
   
-  return heapify(heap, 0)
+  heapify(heap, 0)
+
+  return root.source;
 };
 
 module.exports = {

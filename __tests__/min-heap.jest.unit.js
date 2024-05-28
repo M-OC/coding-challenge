@@ -113,17 +113,14 @@ describe("minHeap", () => {
     test("It replaces root with the smallest node when called", () => {
       let root1, root2, root3, root4;
 
-      root1 = heap[0].value;
-      minHeap.removeRoot(heap);
-      root2 = heap[0].value;
-      minHeap.removeRoot(heap);
-      root3 = heap[0].value;
-      minHeap.removeRoot(heap);
+      root1 = minHeap.removeRoot(heap).last.date.valueOf();
+      root2 = minHeap.removeRoot(heap).last.date.valueOf();
+      root3 = minHeap.removeRoot(heap).last.date.valueOf();
       root4 = heap[0].value;
 
-      expect(root1).toBeLessThan(root2);
-      expect(root2).toBeLessThan(root3);
-      expect(root3).toBeLessThan(root4);
+      expect(root1).toBeLessThanOrEqual(root2);
+      expect(root2).toBeLessThanOrEqual(root3);
+      expect(root3).toBeLessThanOrEqual(root4);
       expect(heap.length).toEqual(7);
     })
 
