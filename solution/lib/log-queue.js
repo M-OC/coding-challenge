@@ -15,11 +15,15 @@ module.exports = class LogQueue {
     this.tasks = new TaskQueue([], {autoRun: true});
   }
 
+  updateLast() {
+    this.last = this.queue.check() || this.last;
+  }
+
   getLogsIfApplicable() {
     const logCount = this.queue.checkLength();
 
     if (this.drained === false && logCount < this.limit) {
-      this.tasks.addTask(() => {this.addLog()})
+      this.tasks.addTask(() => this.addLog())
     }
   }
 
@@ -32,18 +36,42 @@ module.exports = class LogQueue {
       this.queue.enqueue(log);
     }
 
+    this.updateLast();
     this.getLogsIfApplicable();
   }
 
-  async getLatest() {
-    let log = this.queue.dequeue();
+  async checkLatest() {
+    let log = this.queue.check();
 
     if (log) {
       return log;
     } else {
       return new Promise(resolve => {
-        this.tasks.enqueue(resolve)
-      }).then(() => this.queue.dequeue())
+        this.tasks.addTask(() => this.addLog())
+        this.tasks.addTask(resolve)
+      }).then(() => {
+        return this.queue.check();
+      })
+    }
+  }
+
+  async getLatest() {
+    const log = this.queue.dequeue();
+
+    if (log) {
+      this.getLogsIfApplicable();
+      this.updateLast();
+      return log;
+    } else {
+
+      return new Promise(resolve => {
+        this.tasks.addTask(() => this.addLog())
+        this.tasks.addTask(resolve)
+      }).then(() => {
+        const log = this.queue.dequeue();
+        this.updateLast();
+        return log;
+      })
     }
   }
 }
