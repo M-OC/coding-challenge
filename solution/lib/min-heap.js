@@ -13,6 +13,9 @@ const createNode = (source) => {
     throw new Error('Source already drained')
   }
 
+  /* 'value' determines placement order in the heap.
+  Since older dates are represented by smaller numbers, 
+  the root node should always produce the earliest log. */
   const value = parseInt(source.last.date.valueOf());
 
   return {

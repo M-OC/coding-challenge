@@ -64,6 +64,8 @@ module.exports = class LogQueue {
       return log;
     } else {
 
+      // This wound up being a lot more convoluted than I was expecting.
+      // There's probably a much cleaner way to handle this scenario.
       return new Promise(resolve => {
         this.tasks.addTask(() => this.addLog())
         this.tasks.addTask(resolve)
